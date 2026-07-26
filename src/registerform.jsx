@@ -1,170 +1,235 @@
 import { useNavigate } from "react-router-dom";
-import { useState,useEffect} from "react";
-function StudentRegisterForm({students,addstudent,edit,updatedstudent,canceledit}){
-    const[studentname,setstudentname]= useState("")
-    const[email,setemail]= useState("")
-    const[phonenumber,setphonenumber]=useState("")
-    const[department,setdepartment]=useState("")
-    const [year,setyear]= useState("")
-    const[event,setevent]= useState("")
-    const[error,seterror]=useState({})
+import { useState, useEffect } from "react";
+import './App.css';
 
-    const navigate = useNavigate()
+function StudentRegisterForm({ students, addstudent, edit, updatedstudent, canceledit }) {
+    const [studentname, setstudentname] = useState("");
+    const [email, setemail] = useState("");
+    const [phonenumber, setphonenumber] = useState("");
+    const [department, setdepartment] = useState("");
+    const [year, setyear] = useState("");
+    const [event, setevent] = useState("");
+    const [error, seterror] = useState({});
 
-    useEffect (() => {
-    if (edit!==null){
-        const student = students[edit]
-        setstudentname ( student.studentname)
-        setemail (student.email)
-        setphonenumber (student.phonenumber)
-        setdepartment(student.department)
-        setyear (student.year)
-        setevent (student.event) 
+    const navigate = useNavigate();
 
-    }},[edit,students])
+    useEffect(() => {
+        if (edit !== null) {
+            const student = students[edit];
+            setstudentname(student.studentname);
+            setemail(student.email);
+            setphonenumber(student.phonenumber);
+            setdepartment(student.department);
+            setyear(student.year);
+            setevent(student.event);
+        }
+    }, [edit, students]);
 
+    const handlecancel = () => {
+        canceledit();
+        navigate('/table');
+    };
 
-    const handlecancel=()=>{
-        canceledit()
-        navigate('/table')
-    }
+    const handleclick = (e) => {
+        e.preventDefault();
 
+        let newerror = {};
 
-    const handleclick = (e)=>{
-        e.preventDefault()
-
-        let newerror ={}
-
-     if (!studentname){
-        newerror.studentname = "studentname cant be empty"
-     }
-
-     if (!email){
-        newerror.email = "email is cant be empty "
-     }
-     else if (! /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
-            newerror.email = "invalid email"
+        if (!studentname) {
+            newerror.studentname = "Student name is required";
         }
 
-        const alreadyexist = students.find((student,index)=>{
-           return student.email == email && index!==edit
-        })
-        if (alreadyexist){
-            newerror.email = "already exists"
+        if (!email) {
+            newerror.email = "Email is required";
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            newerror.email = "Invalid email format";
         }
-     if (!phonenumber){
-        newerror.phonenumber = " phone number cant be empty"
-     }
 
-     else if (phonenumber.length!==10){
-        newerror.phonenumber = "phonenumber must contain 10 numbers"
-     }
-     if (!department){
-        newerror.department = "department cant be empty"
-     }
-     if(!year){
-        newerror.year = "choose a year "
-     }
-     if (!event){
-        newerror.event = "select a event"
-     }
-     seterror (newerror)
-
-     if (Object.keys (newerror).length==0){
-        const newstudent = { id: Date.now(), studentname, email, phonenumber, department, year, event }
-        if (edit!==null){
-          updatedstudent(newstudent)
+        const alreadyexist = students.find((student, index) => {
+            return student.email === email && index !== edit;
+        });
+        if (alreadyexist) {
+            newerror.email = "Email already exists";
         }
-        else{
-            addstudent(newstudent)
-        }
-        navigate('/table')
 
-    }
-}
-    return(
+        if (!phonenumber) {
+            newerror.phonenumber = "Phone number is required";
+        } else if (phonenumber.length !== 10) {
+            newerror.phonenumber = "Phone number must be 10 digits";
+        }
+
+        if (!department) {
+            newerror.department = "Department is required";
+        }
+
+        if (!year) {
+            newerror.year = "Please select a year";
+        }
+
+        if (!event) {
+            newerror.event = "Please select an event";
+        }
+
+        seterror(newerror);
+
+        if (Object.keys(newerror).length === 0) {
+            const newstudent = { id: Date.now(), studentname, email, phonenumber, department, year, event };
+            if (edit !== null) {
+                updatedstudent(newstudent);
+            } else {
+                addstudent(newstudent);
+            }
+            navigate('/table');
+        }
+    };
+
+    return (
         <>
-        <h1> Student Register Form </h1>
-        <br/>
-        <form >
-            <div>
-                <label> StudentName </label>
-                <input type="text"value={studentname}placeholder="enter a student name "onChange={(e)=>{
-                  setstudentname(e.target.value)
-                }}/> 
-                <p style={{color :"red",fontSize:"12px",fontStyle:"italic"}}> {error.studentname}</p>
-    
+            <h1>{edit !== null ? "Update Student Registration" : "Student Registration Form"}</h1>
+            <form>
+                <div>
+                    <label htmlFor="studentname">Student Name</label>
+                    <input
+                        id="studentname"
+                        type="text"
+                        value={studentname}
+                        placeholder="Enter your full name"
+                        onChange={(e) => {
+                            setstudentname(e.target.value);
+                        }}
+                    />
+                    {error.studentname && <p className="error-message">{error.studentname}</p>}
                 </div>
-                <br/>
 
                 <div>
-                    <label> Email </label>
-                    <input type="email"value={email} placeholder="enter a email"onChange={(e)=>{
-                        setemail(e.target.value)
-                    }} />
-                    <p  style={{color :"red",fontSize:"12px",fontStyle:"italic"}}> {error.email}</p>
+                    <label htmlFor="email">Email</label>
+                    <input
+                        id="email"
+                        type="email"
+                        value={email}
+                        placeholder="Enter your email address"
+                        onChange={(e) => {
+                            setemail(e.target.value);
+                        }}
+                    />
+                    {error.email && <p className="error-message">{error.email}</p>}
                 </div>
-                <br/>
-                <div>
-                    <label> phone number </label>
-                    <input type="number"value={phonenumber} placeholder="enter a phone number"onChange={(e)=>{
-                        setphonenumber(e.target.value)
-                    }}/> 
-                    <p  style={{color :"red",fontSize:"12px",fontStyle:"italic"}}>{error.phonenumber} </p>
-                    
-                </div>
-                <br/>
-                <div>
-                    <label> Department </label>
-                    <input type="text"value={department} placeholder="enter a department" onChange={(e)=>{
-                        setdepartment(e.target.value)
-                    }}/>
-                  <p  style={{color :"red",fontSize:"12px",fontStyle:"italic"}}>   {error.department} </p>
-                    
-                </div>
-                <br/>
-                <div>
-                    <label> Year </label>
-                    <input type="radio" name="year" value={"1st"} checked={year=="1st"} onChange={(e)=>{
-                        setyear(e.target.value)
-                    }}/> 1st
 
-                    
-                    <input type="radio" name="year" value={"2nd"} checked = {year=="2nd"}  onChange={(e)=>{
-                        setyear (e.target.value)
-                    }}/> 2nd 
+                <div>
+                    <label htmlFor="phonenumber">Phone Number</label>
+                    <input
+                        id="phonenumber"
+                        type="number"
+                        value={phonenumber}
+                        placeholder="Enter 10-digit phone number"
+                        onChange={(e) => {
+                            setphonenumber(e.target.value);
+                        }}
+                    />
+                    {error.phonenumber && <p className="error-message">{error.phonenumber}</p>}
+                </div>
 
-                    <input type="radio" value={"3rd"} name="year" checked={year=="3rd"} onChange={(e)=>{
-                        setyear(e.target.value)
-                    }}/> 3rd
-                    
-                    <input type="radio" name="year" value={"4th"} checked={year=="4th"} onChange={(e)=>{
-                        setyear(e.target.value)
-                    }}/> 4rd
-                   <p  style={{color :"red",fontSize:"12px",fontStyle:"italic"}}> {error.year} </p>
+                <div>
+                    <label htmlFor="department">Department</label>
+                    <input
+                        id="department"
+                        type="text"
+                        value={department}
+                        placeholder="Enter your department"
+                        onChange={(e) => {
+                            setdepartment(e.target.value);
+                        }}
+                    />
+                    {error.department && <p className="error-message">{error.department}</p>}
+                </div>
+
+                <div>
+                    <label>Year of Study</label>
+                    <div className="radio-group">
+                        <div className="radio-item">
+                            <input
+                                id="year1"
+                                type="radio"
+                                name="year"
+                                value="1st"
+                                checked={year === "1st"}
+                                onChange={(e) => {
+                                    setyear(e.target.value);
+                                }}
+                            />
+                            <label htmlFor="year1" style={{ marginBottom: 0 }}>1st</label>
+                        </div>
+                        <div className="radio-item">
+                            <input
+                                id="year2"
+                                type="radio"
+                                name="year"
+                                value="2nd"
+                                checked={year === "2nd"}
+                                onChange={(e) => {
+                                    setyear(e.target.value);
+                                }}
+                            />
+                            <label htmlFor="year2" style={{ marginBottom: 0 }}>2nd</label>
+                        </div>
+                        <div className="radio-item">
+                            <input
+                                id="year3"
+                                type="radio"
+                                name="year"
+                                value="3rd"
+                                checked={year === "3rd"}
+                                onChange={(e) => {
+                                    setyear(e.target.value);
+                                }}
+                            />
+                            <label htmlFor="year3" style={{ marginBottom: 0 }}>3rd</label>
+                        </div>
+                        <div className="radio-item">
+                            <input
+                                id="year4"
+                                type="radio"
+                                name="year"
+                                value="4th"
+                                checked={year === "4th"}
+                                onChange={(e) => {
+                                    setyear(e.target.value);
+                                }}
+                            />
+                            <label htmlFor="year4" style={{ marginBottom: 0 }}>4th</label>
+                        </div>
                     </div>
-                    <br/>
-                    <div>
-                        <label> Event </label>
-                        <select value={event} name="year" onChange={(e)=> setevent(e.target.value)}>
-                            <option value={""}> select option </option>
-                            <option value="code contest"> CodeContest</option>
-                            <option value="Ui Design"> Ui Design </option>
-                            <option value="Debugging challange"> Debugging Challange </option>
-                        </select>
-                       <p  style={{color :"red",fontSize:"12px",fontStyle:"italic"}}> {error.event} </p>
-                    </div>
-                    <br/>
-                    <button type="submit" onClick={handleclick}> {edit!==null?"update":"registration"} </button>
+                    {error.year && <p className="error-message">{error.year}</p>}
+                </div>
 
-                    {edit!==null ?(
-                    <button type="button" onClick={handlecancel}> cancel </button>): null
-}
+                <div>
+                    <label htmlFor="event">Event</label>
+                    <select
+                        id="event"
+                        value={event}
+                        onChange={(e) => setevent(e.target.value)}
+                    >
+                        <option value="">Select an event</option>
+                        <option value="code contest">Code Contest</option>
+                        <option value="Ui Design">UI Design</option>
+                        <option value="Debugging challange">Debugging Challenge</option>
+                    </select>
+                    {error.event && <p className="error-message">{error.event}</p>}
+                </div>
 
-                
-        </form>
+                <div style={{ display: 'flex', gap: '1rem', marginTop: '1.5rem' }}>
+                    <button type="submit" onClick={handleclick} style={{ flex: 1 }}>
+                        {edit !== null ? "Update Registration" : "Register Now"}
+                    </button>
+                    {edit !== null && (
+                        <button type="button" onClick={handlecancel} className="secondary-btn" style={{ flex: 1 }}>
+                            Cancel
+                        </button>
+                    )}
+                </div>
+            </form>
         </>
-    )
+    );
 }
 
-export default StudentRegisterForm
+export default StudentRegisterForm;
